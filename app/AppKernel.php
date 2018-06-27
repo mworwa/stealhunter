@@ -9,6 +9,7 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         $bundles = [
+            new Sideclick\BootstrapModalBundle\SideclickBootstrapModalBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),

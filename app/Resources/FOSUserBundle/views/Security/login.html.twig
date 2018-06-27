@@ -1,0 +1,24 @@
+{% extends "FOSUserBundle::layout.html.twig" %}
+{% trans_default_domain 'FOSUserBundle' %}
+{% block fos_user_content %}
+    <main class="login-page">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 offset-2 mt-5">
+                    <div class="form-group">
+                        <form action="{{ path("fos_user_security_check") }}" method="post">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
+                            <label class="text-white">Login</label>
+                            <input class="form-control mb-3" type="text" id="username" name="_username"
+                                   value="{{ last_username }}" required="required" placeholder="Wpisz swój login"/>
+                            <label for="_password" class="text-white">Hasło</label>
+                            <input class="form-control mb-3" type="password" id="password" name="_password"
+                                   required="required" placeholder="Wpisz swoje hasło"/>
+                            <input class="btn login-button text-white" type="submit" id="_submit" name="_submit" value="ZALOGUJ"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock fos_user_content %}

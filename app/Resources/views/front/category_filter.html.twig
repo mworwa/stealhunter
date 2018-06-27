@@ -1,0 +1,149 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <main class="homepage">
+        <section id="section-content">
+            <div class="container">
+                <div class="row pt-5">
+                    <div class="col-lg-3 category-list">
+                        {% if app.user %}
+                            <div class="stealfeed-create-box p-4">
+                                <p class="text-white">
+                                    Cześć, {{ app.user.username }}!
+                                </p>
+                                <p></p>
+                                <a href="{{ path('sale_add') }}" class="btn color-blue text-white">
+                                    Dodaj promocje
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="stealfeed-create-box p-4 mt-5">
+                                <p class="text-white">
+                                    Cześć! Zarejestruj się aby móc dodawać i oceniać steale!
+                                    Nie przegap już żadnej okazji
+                                </p>
+                                <p></p>
+                                <a href="{{ path('fos_user_registration_register') }}" class="btn color-blue text-white">
+                                    Stwórz konto
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-lg-8">
+                        <h4 class="text-white mb-3">Wyniki dla kategorii: {{ category.name }}</h4>
+                        <div class="sort-list p-2">
+                            <a>TOP</a>
+                        </div>
+                        <div class="sales-list">
+                            {% if sales is empty %}
+                            <p class="p-2">Brak promocji dla tej kategorii</p>
+                             {% endif %}
+                            {% for sale in sales %}
+
+                            <div class="sale">
+                                <div class="col-lg-12">
+                                    <div class="row p-2">
+                                        {#<div class="col-lg-1">#}
+                                        {#avatar#}
+                                        {#</div>#}
+                                        <div class="col-lg-10">
+                                            <div class="sale-info">
+                                                <a target="_blank" href="{{ sale.url }}">
+                                                    {#<a href="#" data-toggle="modal"#}
+                                                    {#data-target="#exampleModal{{ sale.id }}">#}
+                                                    <div>
+                                                        <div class="col-lg-12">
+                                                            <h5 class="text-white sale-title">{{ sale.title }}</h5>
+                                                        </div>
+                                                        <div class="col-lg-12 description">
+                                                            <small class="text-muted">{{ sale.description }}</small>
+                                                        </div>
+                                                    </div>
+                                                </a>
+
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <a href="{{ path('categoryList', {'categoryId': category.id}) }}"> <span
+                                                            class="badge badge-info"> {{ sale.category.name }}</span></a>
+
+                                            </div>
+                                        </div>
+                                        {% if app.user %}
+                                        {% set znalezion = false %}
+                                        <div class="col-lg-2">
+                                            {% for vote in sale.votes %}
+                                                {% if vote.user.id == app.user.id %}
+                                                    {% set znalezion = TRUE %}
+                                                {% endif %}
+
+                                            {% endfor %}
+                                            {% if znalezion %}
+                                                <span id="voting-button-{{ sale.id }}"
+                                                      class="fa fa-thumbs-up btn text-danger"
+                                                      onclick="removeVote('{{ sale.id }}')"></span>
+                                            {% else %}
+                                                <span id="voting-button-{{ sale.id }}" class="fa fa-thumbs-up btn"
+                                                      onclick="addVote('{{ sale.id }}')"></span>
+
+                                            {% endif %}
+                                            {% endif %}
+                                            <span class="votes-count-{{ sale.id }}">{{ sale.votes|length }}</span>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <hr>
+                                </a>
+                                <div class="modal fade" id="exampleModal{{ sale.id }}" tabindex="-1" role="dialog"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body">
+                                                {{ render(controller('AppBundle:Sale:show', {'id': sale.id})) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    </main>
+    <script type="application/javascript">
+        function addVote(saleId) {
+            // $('#voting-button-' + saleId).removeClass('fa-thumbs-up');
+            $('#voting-button-' + saleId).addClass('text-danger');
+            $('#voting-button-' + saleId).attr("onclick", `removeVote('${saleId}')`);
+            $('.votes-count-' + saleId).html(parseInt($('.votes-count-' + saleId).html(), 10) + 1)
+            $.ajax({
+                type: "GET",
+                url: '/vote/add/' + saleId,
+                success: function (data) {
+
+                }
+            });
+        }
+
+        function removeVote(saleId) {
+            $('#voting-button-' + saleId).removeClass('text-danger');
+            // $('#voting-button-' + saleId).addClass('fa-thumbs-up');
+            $('#voting-button-' + saleId).attr("onclick", `addVote('${saleId}')`);
+            $('.votes-count-' + saleId).html(parseInt($('.votes-count-' + saleId).html(), 10) - 1)
+
+            $.ajax({
+                type: "GET",
+                url: '/vote/remove/' + saleId,
+                success: function (data) {
+
+                }
+            });
+        }
+
+
+    </script>
+
+
+
+{% endblock %}

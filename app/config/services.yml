@@ -33,3 +33,11 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+    voting_service:
+        class: 'AppBundle\Service\VotingService'
+        public: true
+        arguments:
+            - "@doctrine.orm.entity_manager"
+    sorter_factory:
+        class: 'AppBundle\Service\Sorting\SorterFactory'
+        public: true
